@@ -48,3 +48,13 @@ class Airly:
         return MeasurementsSession(
             self._rh, MeasurementsSession.Mode.POINT,
             latitude=latitude, longitude=longitude)
+
+    @property
+    def requests_remaining(self):
+        """Returns the remaining number of requests."""
+        return self._rh.requests_remaining
+
+    @property
+    def requests_per_day(self):
+        """Returns the allowed number of requests per day."""
+        return self._rh.requests_per_day

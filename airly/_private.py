@@ -27,6 +27,8 @@ class _RequestsHandler:
             self.headers['Accept-Language'] = language
         self.base_url = base_url
         self.session = session
+        self.requests_per_day = None
+        self.requests_remaining = None
 
     async def get(self, request_path):
         url = self.base_url + request_path
@@ -38,6 +40,8 @@ class _RequestsHandler:
                 raise AirlyError(response.status, await response.text())
 
             data = await response.json()
+            self.requests_per_day = response.headers.get("X-RateLimit-Limit-day")
+            self.requests_remaining = response.headers.get("X-RateLimit-Remaining-day")
             _LOGGER.debug(json.dumps(data))
             return data
 
