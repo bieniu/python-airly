@@ -38,9 +38,9 @@ class _RequestsHandler:
             # headers should be returned for HTTP status code 200 and 429, but sometimes
             # they are missing for unknown reasons.
             if "X-RateLimit-Limit-day" in response.headers:
-                self.requests_per_day = response.headers["X-RateLimit-Limit-day"]
+                self.requests_per_day = int(response.headers["X-RateLimit-Limit-day"])
             if "X-RateLimit-Remaining-day" in response.headers:
-                self.requests_remaining = response.headers["X-RateLimit-Remaining-day"]
+                self.requests_remaining = int(response.headers["X-RateLimit-Remaining-day"])
             if response.status != 200:
                 _LOGGER.warning("Invalid response from Airly API: %s",
                                 response.status)
