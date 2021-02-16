@@ -34,11 +34,10 @@ class _RequestsHandler:
         url = self.base_url + request_path
         _LOGGER.debug("Sending request: " + url)
         async with self.session.get(url, headers=self.headers) as response:
-            if response.status in (200, 429):
-                if "X-RateLimit-Limit-day" in response.headers:
-                    self.requests_per_day = response.headers["X-RateLimit-Limit-day"]
-                if "X-RateLimit-Remaining-day" in response.headers:
-                    self.requests_remaining = response.headers["X-RateLimit-Remaining-day"]
+            if "X-RateLimit-Limit-day" in response.headers:
+                self.requests_per_day = response.headers["X-RateLimit-Limit-day"]
+            if "X-RateLimit-Remaining-day" in response.headers:
+                self.requests_remaining = response.headers["X-RateLimit-Remaining-day"]
             if response.status != 200:
                 _LOGGER.warning("Invalid response from Airly API: %s",
                                 response.status)
