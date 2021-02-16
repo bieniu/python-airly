@@ -34,6 +34,9 @@ class _RequestsHandler:
         url = self.base_url + request_path
         _LOGGER.debug("Sending request: " + url)
         async with self.session.get(url, headers=self.headers) as response:
+            # The values for the X-RateLimit-Limit-day and X-RateLimit-Remaining-day
+            # headers should be returned for HTTP status code 200 and 429, but sometimes
+            # they are missing for unknown reasons.
             if "X-RateLimit-Limit-day" in response.headers:
                 self.requests_per_day = response.headers["X-RateLimit-Limit-day"]
             if "X-RateLimit-Remaining-day" in response.headers:
