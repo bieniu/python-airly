@@ -1,8 +1,10 @@
 import json
 from unittest import TestCase
-from unittest.mock import AsyncMock, Mock
+from unittest.mock import Mock
 
 from aiounittest import AsyncTestCase
+from asyncmock import AsyncMock
+
 from airly import Airly
 from airly._private import _DictToObj
 
