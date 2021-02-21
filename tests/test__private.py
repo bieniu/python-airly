@@ -28,8 +28,8 @@ class _DictToObjTestCase(TestCase):
         self.assertEqual(2, sut.key2)
 
 
-class HeadersTestCase(AsyncTestCase):
-    async def test_valid_headers(self):
+class RemainingRequestsTestCase(AsyncTestCase):
+    async def test_valid_remaining_requests_headers(self):
         with open("data/measurements_typical.json") as file:
             data = json.load(file)
         headers = {"X-RateLimit-Limit-day": "1000", "X-RateLimit-Remaining-day": "993"}
@@ -46,7 +46,7 @@ class HeadersTestCase(AsyncTestCase):
             assert airly.requests_per_day == 1000
             assert airly.requests_remaining == 993
 
-    async def test_invalid_headers(self):
+    async def test_invalid_remaining_requests_headers(self):
         with open("data/measurements_typical.json") as file:
             data = json.load(file)
         headers = {}
