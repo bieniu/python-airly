@@ -1,9 +1,9 @@
 import json
 from unittest import TestCase
-from unittest.mock import Mock
 
+import aiohttp
+from aioresponses import aioresponses
 from aiounittest import AsyncTestCase
-from asyncmock import AsyncMock
 
 from airly import Airly
 from airly._private import _DictToObj
@@ -33,32 +33,43 @@ class RemainingRequestsTestCase(AsyncTestCase):
         with open("data/measurements_typical.json") as file:
             data = json.load(file)
         headers = {"X-RateLimit-Limit-day": "1000", "X-RateLimit-Remaining-day": "993"}
-        with Mock(
-            get=AsyncMock(side_effect=data),
-            headers=Mock(side_effect=headers),
-            status=200,
-            __enter__=Mock(),
-            __exit__=Mock(),
-        ) as mock_session:
-            airly = Airly("abcdef", mock_session)
+
+        session = aiohttp.ClientSession()
+
+        with aioresponses() as session_mock:
+            session_mock.get(
+                'https://airapi.airly.eu/v2/measurements/point?lat=12.000000&lng=21.000000',
+                payload=data,
+                headers=headers,
+            )
+            airly = Airly("abcdef", session)
             measurements = airly.create_measurements_session_point(LATITUDE, LONGITUDE)
             await measurements.update()
-            assert airly.requests_per_day == 1000
-            assert airly.requests_remaining == 993
+
+        await session.close()
+
+        self.assertEqual(1000, airly.requests_per_day)
+        self.assertEqual(993, airly.requests_remaining)
 
     async def test_invalid_remaining_requests_headers(self):
         with open("data/measurements_typical.json") as file:
             data = json.load(file)
         headers = {}
-        with Mock(
-            get=AsyncMock(side_effect=data),
-            headers=Mock(side_effect=headers),
-            status=200,
-            __enter__=Mock(),
-            __exit__=Mock(),
-        ) as mock_session:
-            airly = Airly("abcdef", mock_session)
+        
+        session = aiohttp.ClientSession()
+
+        with aioresponses() as session_mock:
+            session_mock.get(
+                'https://airapi.airly.eu/v2/measurements/point?lat=12.000000&lng=21.000000',
+                payload=data,
+                headers=headers,
+            )
+            airly = Airly("abcdef", session)
             measurements = airly.create_measurements_session_point(LATITUDE, LONGITUDE)
             await measurements.update()
-            assert airly.requests_per_day == None
-            assert airly.requests_remaining == None
+        
+        await session.close()
+
+        self.assertIsNone(airly.requests_per_day)
+        self.assertIsNone(airly.requests_remaining)
+        
