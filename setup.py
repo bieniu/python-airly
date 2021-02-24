@@ -26,4 +26,5 @@ setuptools.setup(
         "Operating System :: OS Independent",
     ],
     test_suite='tests',
+    tests_require=("aioresponses", "aiounittest"),
 )
